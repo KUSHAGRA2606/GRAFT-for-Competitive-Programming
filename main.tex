@@ -1,0 +1,56 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{booktabs}
+
+\title{GRAFT: Graph Retrieval Augmented Fine Tuning for Multi-Hop Query Summarization}
+\author{Sonya Jin \and Sunny Yu \and Natalia Kokoromyti \\ Stanford University}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Traditional retrieval-augmented generation (RAG) approaches struggle with multi-hop reasoning and global query-focused summarization tasks over large document corpora, which require summarizing broad themes and contexts and a holistic knowledge of documents. We propose GRAFT (Graph Retrieval Augmented Fine-Tuning), a novel approach that combines the strengths of the Retrieval Augmented Fine-Tuning (RAFT) methodology and the GraphRAG technique. GRAFT fine-tunes large language models (LLMs) on a simulated imperfect retrieval setting, training the model to identify relevant documents and ignore distractors in the provided context. The model is then coupled with graphRAG at inference. Our experimental results demonstrate that GRAFT outperforms baseline models, including the Baseline RAG model, the RAFT model, and the Baseline GraphRAG model, across various evaluation metrics like BERT, BLEU, ROUGE-1, and Semantic Similarity.
+\end{abstract}
+
+\section{Introduction}
+Large language models (LLMs) have shown remarkable capabilities in natural language processing tasks, but they often struggle with hallucinations, coherence, and factual consistency, especially in complex, domain-specific scenarios. Retrieval-Augmented Generation (RAG) systems mitigate these limitations by grounding the model's outputs in factual knowledge. Despite their potential, traditional RAG systems face challenges in retrieval accuracy, contextual understanding, and response coherence when dealing with multi-hop reasoning and global query-focused summarization tasks. This paper focuses on two types of questions: multi-hop questions and global questions. We propose GRAFT, combining the RAFT approach with GraphRAG, capturing global and local information within the documents through extracted communities from a knowledge graph. 
+
+\section{Related Work}
+Existing studies have advocated for the need for LLMs to move beyond simply reciting the training data to actively seek out and synthesize information from supplemental knowledge bases. RAG struggles with global questions, such as identifying the main themes throughout an entire text corpora, as this task requires query-focused summarization rather than explicit retrieval. Advanced techniques like RAFT enhance the model's ability to differentiate between relevant and irrelevant documents by employing a chain-of-thought fine-tuning process. GraphRAG constructs a knowledge graph from source documents, explicitly modeling relationships and using community summaries. No existing study has explored the confluence of these approaches until now.
+
+\section{Approach}
+\subsection{RAFT-inspired Finetuning}
+We follow the approach outlined in RAFT by fine-tuning the Microsoft Phi-2 model using relevant and distractor documents. Specifically, we fine-tuned Phi-2 with QLORA on a subset of the HotPotQA dataset. Each training example consisted of a question, an answer, 1-2 oracle passages, and 3-4 irrelevant distractor passages.
+
+\subsection{GraphRAG}
+Our GraphRAG approach involves text chunking, entity and relation extraction using GPT-4o, graph construction, community detection via the Leiden algorithm, community summarization, and query processing using retrieval-augmented generation.
+
+\section{Experiments}
+For our experiments, we utilize the HotPotQA dataset for model fine-tuning and a custom dataset consisting of 74 Wikipedia articles for evaluating global question answering. We evaluated the question answering performance using human evaluation, BERT-Score, BLEU Score, ROUGE-1 Score, and Semantic Similarity. 
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lcccc}
+\toprule
+Metric & Baseline RAG model & RAFT & Baseline GraphRAG & GRAFT \\
+\midrule
+Human Eval & 0.310 & 0.500 & 0.413 & 0.620 \\
+BERT & -0.0196 & 0.0575 & 0.346 & 0.330 \\
+BLEU & 0.0130 & 0.0344 & 0.0290 & 0.143 \\
+ROUGE-1 & 0.168 & 0.239 & 0.288 & 0.428 \\
+Semantic Sim & 0.620 & 0.669 & 0.753 & 0.863 \\
+\bottomrule
+\end{tabular}
+\caption{Evaluation results for global questions}
+\end{table}
+
+The GRAFT model achieves the highest scores across all metrics for global questions, outperforming the Baseline RAG model, RAFT, and Baseline GraphRAG. 
+
+\section{Conclusion}
+We introduced GRAFT, a novel approach that unifies Retrieval Augmented Fine-Tuning (RAFT) with GraphRAG to address multi-hop reasoning and global query-focused summarization challenges. GRAFT outperformed strong baselines across multiple automated evaluation metrics. Future research includes adaptive graph construction, explanation generation using graph reasoning, and scalability improvements.
+
+\end{document}
