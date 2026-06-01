@@ -1,4 +1,4 @@
-# 🧠 GRAFT: Graph Retrieval-Augmented Fine-Tuning
+# GRAFT: Graph Retrieval-Augmented Fine-Tuning
 
 GRAFT is a highly optimized, local-first **GraphRAG (Graph Retrieval-Augmented Generation)** architecture designed to synthesize complex competitive programming and algorithmic data. 
 
@@ -8,7 +8,7 @@ By combining hierarchical community knowledge graphs, 4-bit LoRA fine-tuning on 
 
 ---
 
-## 🌟 Key Features
+## Key Features
 
 * **Hierarchical GraphRAG:** Replaces naive semantic chunking with NetworkX community clustering, aggregating isolated nodes into 338 mathematically bounded algorithmic communities.
 * **Hardware Optimized (Local Inference):** Built on `unsloth/qwen2.5-3b-instruct-unsloth-bnb-4bit` using 4-bit NormalFloat (NF4) quantization, allowing the entire pipeline to run natively on a standard 4GB VRAM laptop GPU.
@@ -18,7 +18,7 @@ By combining hierarchical community knowledge graphs, 4-bit LoRA fine-tuning on 
 
 ---
 
-## 🏗️ Architecture & Pipeline Phases
+## Architecture & Pipeline Phases
 
 The project was constructed methodically across 5 core phases:
 
@@ -56,7 +56,7 @@ A custom benchmarking suite was engineered to prove the pipeline's superiority o
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Installation
 Clone the repository and install the dependencies:
@@ -90,7 +90,7 @@ python benchmark_extended_metrics.py
 
 ---
 
-## 📄 License & Acknowledgments
+## License & Acknowledgments
 This project implements the theoretical frameworks introduced in the original Microsoft GraphRAG paper, heavily optimized for local, resource-constrained execution. 
 
 Dependencies include `LangGraph`, `FAISS`, `Transformers`, `Peft`, and `Unsloth`.
