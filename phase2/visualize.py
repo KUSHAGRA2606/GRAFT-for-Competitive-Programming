@@ -26,12 +26,15 @@ def visualize_graph():
         logger.warning("Graph is empty. Cannot visualize.")
         return
 
+    logger.info("Filtering graph to remove leaf nodes (degree < 2) for better visualization...")
+    nodes_to_remove = [n for n, d in G.degree() if d < 2]
+    G.remove_nodes_from(nodes_to_remove)
+    logger.info(f"Filtered graph has {G.number_of_nodes()} core concepts.")
+
     logger.info("Initializing PyVis Network...")
-    
-    # Create the PyVis network
     net = Network(height="1000px", width="100%", bgcolor="#222222", font_color="white", select_menu=True, filter_menu=True)
     
-    # Use barnes hut algorithm to space out the nodes
+    # Use barnes hut algorithm to simulate physics smoothly for ~1500 nodes
     net.barnes_hut()
 
     # Convert NetworkX to PyVis
@@ -39,7 +42,9 @@ def visualize_graph():
 
     # Save to HTML
     logger.info("Generating HTML visualization...")
-    net.save_graph(str(VISUALIZATION_FILE))
+    html_content = net.generate_html()
+    with open(VISUALIZATION_FILE, "w", encoding="utf-8") as f:
+        f.write(html_content)
     logger.info(f"Interactive graph saved to {VISUALIZATION_FILE}")
 
 

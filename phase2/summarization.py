@@ -15,9 +15,9 @@ from tqdm.asyncio import tqdm
 from phase2.config import (
     COMMUNITIES_FILE,
     CONCURRENCY_LIMIT,
-    GEMINI_MODEL,
-    GEMINI_BASE_URL,
-    GEMINI_API_KEY,
+    FIREWORKS_MODEL,
+    FIREWORKS_BASE_URL,
+    FIREWORKS_API_KEY,
     MAX_REQUESTS_PER_MINUTE,
     MAX_TOKENS_PER_MINUTE,
     SUMMARIZATION_SYSTEM_PROMPT,
@@ -44,7 +44,7 @@ def _build_community_context(community: dict) -> str:
 
 
 async def _summarize_community(
-    client: AsyncOpenAI, community: dict, max_retries: int = 5
+    client: AsyncOpenAI, community: dict, max_retries: int = 15
 ) -> dict | None:
     comm_id = community["id"]
     context = _build_community_context(community)
@@ -58,7 +58,7 @@ async def _summarize_community(
                 await token_limiter.acquire(estimated_tokens)
                 async with req_limiter:
                     response = await client.chat.completions.create(
-                        model=GEMINI_MODEL,
+                        model=FIREWORKS_MODEL,
                         messages=[
                             {"role": "system", "content": SUMMARIZATION_SYSTEM_PROMPT},
                             {"role": "user", "content": f"Community Context:\n{context}"}
@@ -91,36 +91,48 @@ async def run_summarization() -> None:
         logger.error(f"Communities file not found: {COMMUNITIES_FILE}")
         return
 
-    logger.info("Initializing Gemini client...")
+    logger.info("Initializing Fireworks client...")
     client = AsyncOpenAI(
-        api_key=GEMINI_API_KEY,
-        base_url=GEMINI_BASE_URL,
+        api_key=FIREWORKS_API_KEY,
+        base_url=FIREWORKS_BASE_URL,
     )
 
     logger.info(f"Loading communities from {COMMUNITIES_FILE}")
     with open(COMMUNITIES_FILE, "r", encoding="utf-8") as f:
-        communities = json.load(f)
+        all_communities = json.load(f)
 
-    logger.info(f"Generating summaries for {len(communities)} communities.")
+    existing_summaries = []
+    if SUMMARIES_FILE.exists():
+        try:
+            with open(SUMMARIES_FILE, "r", encoding="utf-8") as f:
+                existing_summaries = json.load(f)
+        except Exception:
+            existing_summaries = []
+    
+    completed_ids = {s["community_id"] for s in existing_summaries}
+    communities_to_process = [c for c in all_communities if c["id"] not in completed_ids]
 
-    progress = tqdm(total=len(communities), desc="Summarizing Communities")
-    summaries = []
+    logger.info(f"Found {len(existing_summaries)} already completed communities. Generating summaries for the remaining {len(communities_to_process)}.")
+
+    progress = tqdm(total=len(communities_to_process), desc="Summarizing Communities")
+    new_summaries = []
 
     async def process_community(comm: dict):
         result = await _summarize_community(client, comm)
         if result is not None:
-            summaries.append(result)
+            new_summaries.append(result)
         progress.update(1)
 
-    tasks = [process_community(c) for c in communities]
+    tasks = [process_community(c) for c in communities_to_process]
     await asyncio.gather(*tasks)
     
     progress.close()
 
+    all_summaries = existing_summaries + new_summaries
     with open(SUMMARIES_FILE, "w", encoding="utf-8") as f:
-        json.dump(summaries, f, ensure_ascii=False, indent=2)
+        json.dump(all_summaries, f, ensure_ascii=False, indent=2)
     
-    logger.info(f"Summarization complete! Saved {len(summaries)} summaries to {SUMMARIES_FILE}")
+    logger.info(f"Summarization complete! Saved {len(all_summaries)} total summaries to {SUMMARIES_FILE}")
 
 
 if __name__ == "__main__":

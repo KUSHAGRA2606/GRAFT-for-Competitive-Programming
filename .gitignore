@@ -1,13 +1,11 @@
 # Environments
 .env
 .venv
+env/
 venv/
 ENV/
 env.bak/
 venv.bak/
-
-# API Keys (CRITICAL SECURITY)
-*.pem
 
 # Python
 __pycache__/
@@ -31,19 +29,32 @@ share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+MANIFEST
 
-# Checkpoints and Temp files
-*.tmp
-*.log
-.DS_Store
+# Model Weights and Adapters (Extremely Large Files)
+graft_qwen-adapters/
+RAFT/graft_qwen-adapters/
+*.safetensors
+*.bin
+*.pt
+*.pth
 
-# IDEs
+# Data and Vector Indices (Large Artifacts)
+data/faiss_index/
+data/graph/
+data/algorithmic_corpus.json
+data/benchmark_baseline_answers.json
+data/benchmark_graft_answers.json
+data/benchmark_results.json
+*.faiss
+
+# IDE and OS Files
 .vscode/
 .idea/
 *.swp
 *.swo
+.DS_Store
+Thumbs.db
 
-# Data & Output 
-# (You can remove these if you WANT to upload your massive JSON datasets to GitHub)
-# data/raw/
-# data/chunks/
+# Keep test questions for reproducibility
+!data/raft/test_questions.json

@@ -13,16 +13,16 @@ FIREWORKS_API_KEY = os.getenv("FIREWORKS_API_KEY")
 FIREWORKS_BASE_URL = "https://api.fireworks.ai/inference/v1"
 FIREWORKS_MODEL = "accounts/fireworks/models/deepseek-v4-flash"
 
-# Gemini Configuration (Used for Summarization)
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
-GEMINI_MODEL = "gemini-2.5-flash"
+# Fireworks Configuration (Used for Summarization)
+FIREWORKS_API_KEY = os.getenv("FIREWORKS_API_KEY")
+FIREWORKS_BASE_URL = "https://api.fireworks.ai/inference/v1"
+FIREWORKS_MODEL = "accounts/fireworks/models/deepseek-v4-flash"
 
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 
-# Rate Limiting (Gemini Free Tier: 15 RPM, 1M TPM)
-MAX_REQUESTS_PER_MINUTE = 14
-MAX_TOKENS_PER_MINUTE = 900000 
+# Rate Limiting (Fireworks Trial Tier has a 60 RPM limit)
+MAX_REQUESTS_PER_MINUTE = 60
+MAX_TOKENS_PER_MINUTE = 200000 
 CONCURRENCY_LIMIT = 2
 
 # ==============================================================================
