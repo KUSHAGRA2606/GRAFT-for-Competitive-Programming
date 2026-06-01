@@ -4,7 +4,7 @@ GRAFT is a highly optimized, local-first **GraphRAG (Graph Retrieval-Augmented G
 
 By combining hierarchical community knowledge graphs, 4-bit LoRA fine-tuning on a Qwen 3B model, and a Map-Reduce agentic orchestrator, GRAFT mathematically outperforms standard Vector RAG by achieving a **42.7% Head-to-Head Win Rate** on complex synthesis tasks.
 
-![GRAFT Benchmark Results](graft_benchmark_results.png)
+
 
 ---
 
