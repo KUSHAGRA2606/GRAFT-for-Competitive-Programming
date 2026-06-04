@@ -6,6 +6,15 @@
     <meta name="description" content="A comprehensive theoretical breakdown and empirical validation of GRAFT: Graph Retrieval-Augmented Fine-Tuning.">
     <title>GRAFT Framework: Theoretical Foundations</title>
     <link rel="stylesheet" href="styles.css">
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
     <div class="container">
@@ -59,8 +68,10 @@
                     <li><strong>In $P\%$ of instances:</strong> The model is presented with a Question ($Q$), the Golden (Oracle) documents ($D^*$), and several Distractor documents ($D_{i}$) that are completely irrelevant.</li>
                     <li><strong>In $(1-P)\%$ of instances:</strong> The model receives the Question ($Q$) and <em>only</em> distractor documents ($D_{i}$), with the golden context entirely omitted.</li>
                 </ul>
-                <pre><code>Training Instance (With Context): Q + D* + D_1 + D_2 + ... + D_k &rarr; A*
-Training Instance (Without Context): Q + D_1 + D_2 + ... + D_k &rarr; A*</code></pre>
+                <div class="math-block" style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 1.25rem; overflow-x: auto; margin-bottom: 1.5rem; text-align: center;">
+                    $$ \text{Training Instance (With Context): } Q + D^* + D_1 + D_2 + \dots + D_k \rightarrow A^* $$
+                    $$ \text{Training Instance (Without Context): } Q + D_1 + D_2 + \dots + D_k \rightarrow A^* $$
+                </div>
                 <p>This enforces dual optimization: the $(1-P)\%$ slice compels the model to memorize core domain knowledge parameters, while the $P\%$ slice acts as an algorithmic filter, training the model to explicitly ignore misleading distractors.</p>
 
                 <h4>B. Algorithmic Filtering: Verification via Citations and Chain-of-Thought</h4>
