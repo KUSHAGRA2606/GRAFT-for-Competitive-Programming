@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GRAFT Framework</title>
-    <!-- Append a version query to bust cache so the user sees the new styles immediately -->
-    <link rel="stylesheet" href="styles.css?v=3">
+    <title>My GRAFT Framework Journey</title>
+    <link rel="stylesheet" href="styles.css?v=4">
     
     <!-- MathJax Configuration -->
     <script>
@@ -26,102 +25,89 @@
 <body>
     <div class="container">
         <header>
-            <h1>GRAFT</h1>
-            <h2>Graph Retrieval-Augmented Fine-Tuning</h2>
+            <h1>My GRAFT Framework</h1>
+            <h2>Graph Retrieval-Augmented Fine-Tuning for Competitive Programming</h2>
         </header>
 
         <main>
             <!-- SECTION 1 -->
             <section class="card">
-                <h3>1. The Core Problem: Vector RAG</h3>
-                <p>Traditional Vector RAG uses text embeddings to fetch facts. However, it struggles with complex tasks:</p>
+                <h3>1. The Core Problem I Set Out to Solve</h3>
+                <p>When building an AI assistant for Competitive Programming (CP) and complex Data Structures, I realized traditional Vector RAG wasn't enough. While standard RAG uses text embeddings to fetch isolated facts, it completely struggles with algorithmic problems due to two main vulnerabilities:</p>
                 <br>
                 <ul>
-                    <li><strong>Multi-Hop Reasoning Deficit:</strong> Fails to connect disjoint pieces of evidence scattered across independent documents.</li>
+                    <li><strong>The Multi-Hop Reasoning Deficit:</strong> CP problems require connecting disjoint pieces of logic (e.g., combining Segment Trees with Lazy Propagation). Standard RAG fails to connect these scattered concepts, fetching contexts based on direct keyword similarity rather than a logical path.</li>
                     <br>
-                    <li><strong>Global Summarization Bottleneck:</strong> Breaks down on "sensemaking" queries that require understanding themes across an entire corpus, rather than isolated facts.</li>
+                    <li><strong>Global Summarization Bottleneck:</strong> When I asked the system broad "sensemaking" questions (e.g., "What are the core paradigms of dynamic programming?"), Vector RAG broke down. You can't fit a whole corpus of algorithms into a context window, and picking the top-$k$ chunks misses the broader thematic patterns.</li>
                 </ul>
             </section>
 
             <!-- SECTION 2 -->
             <section class="card">
-                <h3>2. Pillar 1: GraphRAG</h3>
-                <p>GRAFT uses a <strong>Knowledge Graph Index</strong> to solve the global sensemaking limitation.</p>
+                <h3>2. My Approach Phase 1: Building a GraphRAG Index</h3>
+                <p>To solve the global sensemaking limitation, my approach was to abandon flat text chunks and build a <strong>Knowledge Graph Index</strong> directly out of my competitive programming corpus (scraped from Codeforces and CP-Algorithms).</p>
                 <br>
                 <ul>
-                    <li><strong>Extraction:</strong> An LLM extracts named entities, relationships, and claims from text chunks.</li>
+                    <li><strong>Extraction (<code>pipeline/phase1</code> & <code>phase2</code>):</strong> I utilized an LLM to read through the CP documents and extract explicit entities (e.g., "Dijkstra", "Graph"), relationships, and specific algorithmic claims.</li>
                     <br>
-                    <li><strong>Community Detection:</strong> The <strong>Leiden Algorithm</strong> partitions the massive graph into hierarchical, readable communities.</li>
+                    <li><strong>Community Detection:</strong> A massive knowledge graph of algorithms becomes a tangled hairball. To make it scalable, I applied the <strong>Leiden Algorithm</strong> to mathematically partition the graph into hierarchical, readable communities of tightly-knit algorithmic concepts.</li>
                     <br>
-                    <li><strong>Indexing:</strong> Every community is summarized into a report. These summaries map the entire global structure of the data.</li>
+                    <li><strong>Indexing:</strong> Finally, I had the LLM generate a report-like summary for every identified community. This gave me a pre-computed index that completely mapped the global structure of the algorithmic data.</li>
                 </ul>
             </section>
 
             <!-- SECTION 3 -->
             <section class="card">
-                <h3>3. Pillar 2: RAFT</h3>
-                <p>Downstream retrievers often fetch noisy or irrelevant text. <strong>RAFT</strong> (Retrieval-Augmented Fine-Tuning) prepares an LLM to filter this noise during an "open-book exam".</p>
+                <h3>3. My Approach Phase 2: Alignment via RAFT</h3>
+                <p>Having a structured graph wasn't enough; retrievers still fetch noisy blocks of text. I needed to train my model to act like it was taking an "open-book exam" where some pages were deliberately misleading. For this, I implemented <strong>RAFT</strong> (Retrieval-Augmented Fine-Tuning).</p>
                 
                 <br>
-                <h4>Training Architecture</h4>
-                <p>RAFT alters the fine-tuning data mixture using a hyperparameter $P\%$:</p>
+                <h4>My Training Architecture</h4>
+                <p>In <code>pipeline/phase3</code>, I altered the fine-tuning dataset using a hyperparameter $P\%$. Here is exactly how I formulated the training mixture:</p>
                 <br>
                 <ul>
-                    <li><strong>In $P\%$ of instances:</strong> The model sees the Question ($Q$), the Golden documents ($D^*$), and completely irrelevant Distractor documents ($D_{i}$).</li>
+                    <li><strong>In $P\%$ of instances:</strong> I presented the model with an algorithmic Question ($Q$), the Golden/Oracle documents containing the answer ($D^*$), and completely irrelevant Distractor documents ($D_{i}$).</li>
                     <br>
-                    <li><strong>In $(1-P)\%$ of instances:</strong> The model sees the Question ($Q$) and <em>only</em> Distractor documents ($D_{i}$).</li>
+                    <li><strong>In $(1-P)\%$ of instances:</strong> I presented the model with the Question ($Q$) and <em>only</em> Distractor documents ($D_{i}$), forcing it to rely on its parametric memory.</li>
                 </ul>
                 
-                <!-- Highly Visible Math Block -->
                 <div class="math-block">
                     $$ \text{With Context:} \quad Q + D^* + D_1 + \dots + D_k \rightarrow A^* $$
                     <br>
                     $$ \text{Without Context:} \quad Q + D_1 + \dots + D_k \rightarrow A^* $$
                 </div>
 
-                <p>This dual optimization forces the model to memorize core knowledge while explicitly learning to ignore misleading distractors. It also enforces a structured <strong>Chain-of-Thought (CoT)</strong> answer with verbatim citations.</p>
+                <p>This dual optimization forced my Qwen2.5-3B model to explicitly learn how to ignore misleading distractors. Furthermore, I enforced a structured <strong>Chain-of-Thought (CoT)</strong> formatting, requiring the model to cite verbatim exactly where it found the answer.</p>
             </section>
 
             <!-- SECTION 4 -->
             <section class="card">
-                <h3>4. The GRAFT Fusion</h3>
-                <p>GRAFT unifies these approaches across two pipeline stages:</p>
+                <h3>4. The Final GRAFT Implementation Architecture</h3>
+                <p>My complete solution, GRAFT, unifies these two approaches across offline fine-tuning and an online inference engine built entirely locally for a CPU-only laptop:</p>
                 
                 <div class="code-flow">
-                    <strong>[Offline Fine-Tuning]</strong>
+                    <strong>[Offline Phase: The Pipeline]</strong>
                     <br><br>
-                    Dataset &rarr; RAFT Processing &rarr; QLoRA Fine-Tuning (4-bit)
+                    1. Scrape CP-Algorithms / Codeforces (<code>pipeline/phase1</code>) <br>
+                    2. Build Graph & Leiden Summaries (<code>pipeline/phase2</code>) <br>
+                    3. Generate RAFT Dataset (<code>pipeline/phase3/</code> & <code>RAFT/</code>) <br>
+                    4. Fine-Tune Qwen2.5-3B using 4-bit QLoRA
                 </div>
 
                 <div class="code-flow">
-                    <strong>[Online Inference]</strong>
+                    <strong>[Online Phase: The Agent]</strong>
                     <br><br>
-                    User Query &rarr; Search Leiden Summaries &rarr; Inject Top Summary &rarr; Generate Globally Aware Response
+                    1. <strong><code>src/app.py</code>:</strong> The user submits a query via the Streamlit UI.<br>
+                    2. <strong><code>src/graft_agent.py</code>:</strong> The LangGraph orchestrator computes the embedding of the query and searches the FAISS database of Leiden Community Summaries.<br>
+                    3. A CrossEncoder reranks the top community sentences.<br>
+                    4. The dense context is injected into the fine-tuned model to generate a fluent, globally-aware response.
                 </div>
             </section>
 
             <!-- SECTION 5 -->
             <section class="card">
-                <h3>5. Implementation Architecture</h3>
-                <p>The GRAFT repository is structured to modularly execute this entire theoretical pipeline:</p>
-                <br>
-                <ul>
-                    <li><strong><code>pipeline/phase1/</code> (Knowledge Extraction):</strong> Scrapers targeting Codeforces and CP-Algorithms to build the raw algorithmic text corpus.</li>
-                    <br>
-                    <li><strong><code>pipeline/phase2/</code> (GraphRAG Construction):</strong> Extracts entities/claims, builds the graph, runs the Leiden clustering algorithm, and embeds community summaries into a FAISS vector database.</li>
-                    <br>
-                    <li><strong><code>pipeline/phase3/</code> & <code>RAFT/</code>:</strong> Generates the synthetic oracle/distractor questions to prepare the dataset for LoRA fine-tuning.</li>
-                    <br>
-                    <li><strong><code>src/graft_agent.py</code> (The Brain):</strong> A LangGraph state-machine orchestrator. It connects the 4-bit quantized Qwen2.5-3B model (with LoRA adapters) to the FAISS index and a CrossEncoder for sentence reranking at query time.</li>
-                    <br>
-                    <li><strong><code>src/app.py</code>:</strong> A sleek Streamlit UI providing a real-time, ChatGPT-like interface to the GRAFT Agent.</li>
-                </ul>
-            </section>
-
-            <!-- SECTION 6 -->
-            <section class="card">
-                <h3>6. Experimental Validation</h3>
-                <p>Empirical evaluations on global reasoning queries highlight massive performance leaps over baseline approaches.</p>
+                <h3>5. Experimental Validation of My System</h3>
+                <p>I ran empirical evaluations comparing my GRAFT implementation against standard baseline methods. The results proved massive leaps in reasoning capabilities:</p>
                 
                 <div class="table-responsive">
                     <table>
@@ -130,7 +116,7 @@
                                 <th>Metric</th>
                                 <th>Baseline RAG</th>
                                 <th>Baseline GraphRAG</th>
-                                <th class="highlight-col">GRAFT</th>
+                                <th class="highlight-col">My GRAFT Framework</th>
                             </tr>
                         </thead>
                         <tbody>
