@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My GRAFT Framework Journey</title>
-    <link rel="stylesheet" href="styles.css?v=4">
+    <link rel="stylesheet" href="styles.css?v=5">
     
     <!-- MathJax Configuration -->
     <script>
@@ -23,106 +23,138 @@
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>My GRAFT Framework</h1>
-            <h2>Graph Retrieval-Augmented Fine-Tuning for Competitive Programming</h2>
-        </header>
+    <!-- Dynamic Background -->
+    <div class="background-animation"></div>
 
-        <main>
-            <!-- SECTION 1 -->
-            <section class="card">
-                <h3>1. The Core Problem I Set Out to Solve</h3>
-                <p>When building an AI assistant for Competitive Programming (CP) and complex Data Structures, I realized traditional Vector RAG wasn't enough. While standard RAG uses text embeddings to fetch isolated facts, it completely struggles with algorithmic problems due to two main vulnerabilities:</p>
-                <br>
-                <ul>
+    <!-- Navigation -->
+    <nav class="glass-nav">
+        <div class="logo">GRAFT</div>
+        <div>
+            <a href="#problem">Problem</a>
+            <a href="#phase1">Phase 1</a>
+            <a href="#phase2">Phase 2</a>
+            <a href="#architecture">Architecture</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="hero-content slide-up">
+            <span class="badge">Competitive Programming AI</span>
+            <h1 class="gradient-text">My GRAFT Framework</h1>
+            <h2>Graph Retrieval-Augmented Fine-Tuning</h2>
+            <p class="hero-desc">Solving the multi-hop reasoning deficit in complex Data Structures using Knowledge Graphs and RAFT on a CPU-only laptop.</p>
+            <a href="#problem" class="cta-button">Explore the Framework</a>
+        </div>
+    </header>
+
+    <main class="content-section">
+        <!-- SECTION 1 -->
+        <div class="text-container" id="problem">
+            <h2 class="section-heading">1. The Core Problem</h2>
+            <p class="lead">When building an AI assistant for Competitive Programming (CP) and complex Data Structures, I realized traditional Vector RAG wasn't enough.</p>
+            
+            <div class="highlight-box">
+                <h4>Why Standard RAG Fails</h4>
+                <ul class="professional-list">
                     <li><strong>The Multi-Hop Reasoning Deficit:</strong> CP problems require connecting disjoint pieces of logic (e.g., combining Segment Trees with Lazy Propagation). Standard RAG fails to connect these scattered concepts, fetching contexts based on direct keyword similarity rather than a logical path.</li>
-                    <br>
                     <li><strong>Global Summarization Bottleneck:</strong> When I asked the system broad "sensemaking" questions (e.g., "What are the core paradigms of dynamic programming?"), Vector RAG broke down. You can't fit a whole corpus of algorithms into a context window, and picking the top-$k$ chunks misses the broader thematic patterns.</li>
                 </ul>
-            </section>
+            </div>
+        </div>
 
-            <!-- SECTION 2 -->
-            <section class="card">
-                <h3>2. My Approach Phase 1: Building a GraphRAG Index</h3>
+        <!-- SECTION 2 -->
+        <div class="feature-block" id="phase1">
+            <div class="feature-text">
+                <h4>2. Phase 1: Building a GraphRAG Index</h4>
                 <p>To solve the global sensemaking limitation, my approach was to abandon flat text chunks and build a <strong>Knowledge Graph Index</strong> directly out of my competitive programming corpus (scraped from Codeforces and CP-Algorithms).</p>
-                <br>
-                <ul>
+                
+                <ul class="professional-list">
                     <li><strong>Extraction (<code>pipeline/phase1</code> & <code>phase2</code>):</strong> I utilized an LLM to read through the CP documents and extract explicit entities (e.g., "Dijkstra", "Graph"), relationships, and specific algorithmic claims.</li>
-                    <br>
-                    <li><strong>Community Detection:</strong> A massive knowledge graph of algorithms becomes a tangled hairball. To make it scalable, I applied the <strong>Leiden Algorithm</strong> to mathematically partition the graph into hierarchical, readable communities of tightly-knit algorithmic concepts.</li>
-                    <br>
-                    <li><strong>Indexing:</strong> Finally, I had the LLM generate a report-like summary for every identified community. This gave me a pre-computed index that completely mapped the global structure of the algorithmic data.</li>
+                    <li><strong>Community Detection:</strong> To make the massive graph scalable, I applied the <strong>Leiden Algorithm</strong> to mathematically partition it into hierarchical, readable communities of tightly-knit algorithmic concepts.</li>
+                    <li><strong>Indexing:</strong> Finally, I had the LLM generate a report-like summary for every identified community. This gave me a pre-computed index that completely mapped the global structure.</li>
                 </ul>
-            </section>
+                <div class="tech-tags">
+                    <span>Knowledge Graph</span>
+                    <span>Leiden Algorithm</span>
+                    <span>GraphRAG</span>
+                </div>
+            </div>
+        </div>
 
-            <!-- SECTION 3 -->
-            <section class="card">
-                <h3>3. My Approach Phase 2: Alignment via RAFT</h3>
+        <!-- SECTION 3 -->
+        <div class="feature-block" id="phase2">
+            <div class="feature-text">
+                <h4>3. Phase 2: Alignment via RAFT</h4>
                 <p>Having a structured graph wasn't enough; retrievers still fetch noisy blocks of text. I needed to train my model to act like it was taking an "open-book exam" where some pages were deliberately misleading. For this, I implemented <strong>RAFT</strong> (Retrieval-Augmented Fine-Tuning).</p>
                 
-                <br>
-                <h4>My Training Architecture</h4>
-                <p>In <code>pipeline/phase3</code>, I altered the fine-tuning dataset using a hyperparameter $P\%$. Here is exactly how I formulated the training mixture:</p>
-                <br>
-                <ul>
-                    <li><strong>In $P\%$ of instances:</strong> I presented the model with an algorithmic Question ($Q$), the Golden/Oracle documents containing the answer ($D^*$), and completely irrelevant Distractor documents ($D_{i}$).</li>
-                    <br>
-                    <li><strong>In $(1-P)\%$ of instances:</strong> I presented the model with the Question ($Q$) and <em>only</em> Distractor documents ($D_{i}$), forcing it to rely on its parametric memory.</li>
-                </ul>
-                
+                <div class="highlight-box" style="margin: 2rem 0;">
+                    <h4>My Training Architecture</h4>
+                    <p>In <code>pipeline/phase3</code>, I altered the fine-tuning dataset using a hyperparameter $P\%$:</p>
+                    <ul class="professional-list">
+                        <li><strong>In $P\%$ of instances:</strong> I presented the model with an algorithmic Question ($Q$), Golden documents ($D^*$), and completely irrelevant Distractor documents ($D_{i}$).</li>
+                        <li><strong>In $(1-P)\%$ of instances:</strong> I presented the model with the Question ($Q$) and <em>only</em> Distractor documents ($D_{i}$), forcing it to rely on its parametric memory.</li>
+                    </ul>
+                </div>
+
                 <div class="math-block">
                     $$ \text{With Context:} \quad Q + D^* + D_1 + \dots + D_k \rightarrow A^* $$
                     <br>
                     $$ \text{Without Context:} \quad Q + D_1 + \dots + D_k \rightarrow A^* $$
                 </div>
 
-                <p>This dual optimization forced my Qwen2.5-3B model to explicitly learn how to ignore misleading distractors. Furthermore, I enforced a structured <strong>Chain-of-Thought (CoT)</strong> formatting, requiring the model to cite verbatim exactly where it found the answer.</p>
-            </section>
+                <p>This dual optimization forced my Qwen2.5-3B model to explicitly learn how to ignore misleading distractors while adhering to a structured <strong>Chain-of-Thought (CoT)</strong> formatting to cite verbatim where it found the answer.</p>
+                <div class="tech-tags">
+                    <span>RAFT</span>
+                    <span>Chain-of-Thought</span>
+                    <span>LLM Alignment</span>
+                </div>
+            </div>
+        </div>
 
-            <!-- SECTION 4 -->
-            <section class="card">
-                <h3>4. The Final GRAFT Implementation Architecture</h3>
-                <p>My complete solution, GRAFT, unifies these two approaches across offline fine-tuning and an online inference engine built entirely locally for a CPU-only laptop:</p>
+        <!-- SECTION 4 & 5 using grid Layout -->
+        <div class="grid-layout" id="architecture">
+            <div class="glass-card">
+                <h4>4. Final Implementation Architecture</h4>
+                <p>Unifying approaches across offline fine-tuning and an online inference engine built entirely locally:</p>
                 
-                <div class="code-flow">
-                    <strong>[Offline Phase: The Pipeline]</strong>
-                    <br><br>
-                    1. Scrape CP-Algorithms / Codeforces (<code>pipeline/phase1</code>) <br>
-                    2. Build Graph & Leiden Summaries (<code>pipeline/phase2</code>) <br>
-                    3. Generate RAFT Dataset (<code>pipeline/phase3/</code> & <code>RAFT/</code>) <br>
-                    4. Fine-Tune Qwen2.5-3B using 4-bit QLoRA
+                <div style="margin-top: 2rem;">
+                    <strong style="color: #4facfe; font-size: 1.1rem; display: block; margin-bottom: 1rem;">[Offline Phase: The Pipeline]</strong>
+                    <ul class="professional-list">
+                        <li>Scrape CP-Algorithms / Codeforces (<code>pipeline/phase1</code>)</li>
+                        <li>Build Graph & Leiden Summaries (<code>pipeline/phase2</code>)</li>
+                        <li>Generate RAFT Dataset (<code>pipeline/phase3</code>)</li>
+                        <li>Fine-Tune Qwen2.5-3B using 4-bit QLoRA</li>
+                    </ul>
+                    
+                    <strong style="color: #4facfe; font-size: 1.1rem; display: block; margin-bottom: 1rem; margin-top: 2rem;">[Online Phase: The Agent]</strong>
+                    <ul class="professional-list">
+                        <li><strong>UI:</strong> User submits a query via Streamlit (<code>src/app.py</code>).</li>
+                        <li><strong>Orchestrator:</strong> Embeds query and searches FAISS of Community Summaries.</li>
+                        <li><strong>Rerank:</strong> CrossEncoder reranks top community sentences.</li>
+                        <li><strong>Generate:</strong> Dense context is injected into the fine-tuned model for response.</li>
+                    </ul>
                 </div>
+            </div>
 
-                <div class="code-flow">
-                    <strong>[Online Phase: The Agent]</strong>
-                    <br><br>
-                    1. <strong><code>src/app.py</code>:</strong> The user submits a query via the Streamlit UI.<br>
-                    2. <strong><code>src/graft_agent.py</code>:</strong> The LangGraph orchestrator computes the embedding of the query and searches the FAISS database of Leiden Community Summaries.<br>
-                    3. A CrossEncoder reranks the top community sentences.<br>
-                    4. The dense context is injected into the fine-tuned model to generate a fluent, globally-aware response.
-                </div>
-            </section>
-
-            <!-- SECTION 5 -->
-            <section class="card">
-                <h3>5. Hardware Constraints & Local Execution</h3>
-                <p>One of my primary goals was to ensure this complex pipeline could run entirely locally without relying on expensive cloud GPUs. Here is how I achieved local execution on a standard laptop:</p>
-                <br>
-                <ul>
-                    <li><strong>4-Bit Quantization:</strong> The base model (Qwen2.5-3B-Instruct) is loaded in 4-bit using BitsAndBytes (nf4 format). This drastically reduces the VRAM/RAM footprint, allowing the model to fit in constrained environments.</li>
-                    <br>
-                    <li><strong>LoRA Adapters:</strong> Instead of full-parameter fine-tuning, the RAFT alignment was done via Low-Rank Adaptation (Rank 16). The lightweight adapters are dynamically loaded on top of the quantized base model during inference.</li>
-                    <br>
-                    <li><strong>CPU-Bound Reranking:</strong> While vector search (FAISS) is highly optimized, the CrossEncoder reranker is strictly configured to run on the CPU to prevent out-of-memory (OOM) errors alongside the LLM.</li>
+            <div class="glass-card">
+                <h4>5. Hardware Constraints & Local Execution</h4>
+                <p>Ensuring this complex pipeline could run entirely locally without relying on expensive cloud GPUs:</p>
+                
+                <ul class="professional-list" style="margin-top: 2rem;">
+                    <li><strong>4-Bit Quantization:</strong> The base model (Qwen2.5-3B-Instruct) is loaded in 4-bit using BitsAndBytes (nf4 format) to drastically reduce VRAM/RAM footprint.</li>
+                    <li><strong>LoRA Adapters:</strong> RAFT alignment was done via Low-Rank Adaptation (Rank 16). Lightweight adapters are dynamically loaded on top of quantized base model.</li>
+                    <li><strong>CPU-Bound Reranking:</strong> CrossEncoder reranker is strictly configured to run on the CPU to prevent OOM errors alongside the LLM.</li>
                 </ul>
-                <p>The result is a fully autonomous, offline AI assistant that can parse complex algorithmic reasoning paths without ever sending data to external APIs.</p>
-            </section>
-        </main>
+                <p style="margin-top: 2rem; border-top: 1px solid var(--card-border); padding-top: 1rem;">The result is a fully autonomous, offline AI assistant that parses complex algorithmic paths locally.</p>
+            </div>
+        </div>
+    </main>
 
-        <footer>
-            <p>&copy; GRAFT Project Framework.</p>
-        </footer>
-    </div>
+    <!-- Footer -->
+    <footer>
+        <div class="footer-logo">GRAFT</div>
+        <p>A Graph Retrieval-Augmented Fine-Tuning Project</p>
+    </footer>
 </body>
 </html>
