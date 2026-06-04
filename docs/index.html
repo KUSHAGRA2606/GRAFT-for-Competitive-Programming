@@ -106,47 +106,17 @@
 
             <!-- SECTION 5 -->
             <section class="card">
-                <h3>5. Experimental Validation of My System</h3>
-                <p>I ran empirical evaluations comparing my GRAFT implementation against standard baseline methods. The results proved massive leaps in reasoning capabilities:</p>
-                
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Metric</th>
-                                <th>Baseline RAG</th>
-                                <th>Baseline GraphRAG</th>
-                                <th class="highlight-col">My GRAFT Framework</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Human Eval</td>
-                                <td>0.310</td>
-                                <td>0.413</td>
-                                <td class="highlight-col"><strong>0.620</strong></td>
-                            </tr>
-                            <tr>
-                                <td>BERT-Score</td>
-                                <td>-0.0196</td>
-                                <td>0.346</td>
-                                <td class="highlight-col"><strong>0.330</strong></td>
-                            </tr>
-                            <tr>
-                                <td>ROUGE-1</td>
-                                <td>0.168</td>
-                                <td>0.288</td>
-                                <td class="highlight-col"><strong>0.428</strong></td>
-                            </tr>
-                            <tr>
-                                <td>Semantic Sim</td>
-                                <td>0.620</td>
-                                <td>0.753</td>
-                                <td class="highlight-col"><strong>0.863</strong></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                <h3>5. Hardware Constraints & Local Execution</h3>
+                <p>One of my primary goals was to ensure this complex pipeline could run entirely locally without relying on expensive cloud GPUs. Here is how I achieved local execution on a standard laptop:</p>
+                <br>
+                <ul>
+                    <li><strong>4-Bit Quantization:</strong> The base model (Qwen2.5-3B-Instruct) is loaded in 4-bit using BitsAndBytes (nf4 format). This drastically reduces the VRAM/RAM footprint, allowing the model to fit in constrained environments.</li>
+                    <br>
+                    <li><strong>LoRA Adapters:</strong> Instead of full-parameter fine-tuning, the RAFT alignment was done via Low-Rank Adaptation (Rank 16). The lightweight adapters are dynamically loaded on top of the quantized base model during inference.</li>
+                    <br>
+                    <li><strong>CPU-Bound Reranking:</strong> While vector search (FAISS) is highly optimized, the CrossEncoder reranker is strictly configured to run on the CPU to prevent out-of-memory (OOM) errors alongside the LLM.</li>
+                </ul>
+                <p>The result is a fully autonomous, offline AI assistant that can parse complex algorithmic reasoning paths without ever sending data to external APIs.</p>
             </section>
         </main>
 
