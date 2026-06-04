@@ -102,7 +102,25 @@
 
             <!-- SECTION 5 -->
             <section class="card">
-                <h3>5. Experimental Validation</h3>
+                <h3>5. Implementation Architecture</h3>
+                <p>The GRAFT repository is structured to modularly execute this entire theoretical pipeline:</p>
+                <br>
+                <ul>
+                    <li><strong><code>pipeline/phase1/</code> (Knowledge Extraction):</strong> Scrapers targeting Codeforces and CP-Algorithms to build the raw algorithmic text corpus.</li>
+                    <br>
+                    <li><strong><code>pipeline/phase2/</code> (GraphRAG Construction):</strong> Extracts entities/claims, builds the graph, runs the Leiden clustering algorithm, and embeds community summaries into a FAISS vector database.</li>
+                    <br>
+                    <li><strong><code>pipeline/phase3/</code> & <code>RAFT/</code>:</strong> Generates the synthetic oracle/distractor questions to prepare the dataset for LoRA fine-tuning.</li>
+                    <br>
+                    <li><strong><code>src/graft_agent.py</code> (The Brain):</strong> A LangGraph state-machine orchestrator. It connects the 4-bit quantized Qwen2.5-3B model (with LoRA adapters) to the FAISS index and a CrossEncoder for sentence reranking at query time.</li>
+                    <br>
+                    <li><strong><code>src/app.py</code>:</strong> A sleek Streamlit UI providing a real-time, ChatGPT-like interface to the GRAFT Agent.</li>
+                </ul>
+            </section>
+
+            <!-- SECTION 6 -->
+            <section class="card">
+                <h3>6. Experimental Validation</h3>
                 <p>Empirical evaluations on global reasoning queries highlight massive performance leaps over baseline approaches.</p>
                 
                 <div class="table-responsive">
