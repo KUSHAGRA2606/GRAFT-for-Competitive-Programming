@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A comprehensive theoretical breakdown and empirical validation of GRAFT: Graph Retrieval-Augmented Fine-Tuning.">
+    <title>GRAFT Framework: Theoretical Foundations</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>GRAFT Framework</h1>
+            <h2>Graph Retrieval-Augmented Fine-Tuning</h2>
+            <p class="subtitle">A comprehensive theoretical breakdown bridging structured knowledge extraction and domain-specific alignment.</p>
+        </header>
+
+        <main>
+            <section class="card">
+                <h3>1. The Core Paradigm: Addressing the Limitations of Vector RAG</h3>
+                <p>Traditional Retrieval-Augmented Generation (Vector RAG) relies on a top-$k$ retrieval paradigm. The system chunks documents, generates dense vector representations using text embeddings, and fetches the most semantically close pieces based on a user query.</p>
+                <p>While highly efficient for localized fact retrieval, this architectural setup introduces structural vulnerabilities when applied to complex knowledge tasks:</p>
+                <ul>
+                    <li><strong>The Multi-Hop Reasoning Deficit:</strong> Multi-hop questions require intersecting disjoint pieces of evidence scattered across independent documents. Vector RAG often leaves out critical intermediate steps because it fetches contexts independently based on their direct similarity to the raw query, failing to follow a logical path.</li>
+                    <li><strong>The Global Summarization Bottleneck:</strong> For sensemaking or global queries (e.g., "What are the main themes across this document collection?"), Vector RAG inherently breaks down. These questions require a global holistic synthesis rather than specific fact retrieval. Vector RAG cannot fit an entire millions-of-tokens corpus into an LLM's finite context window, and choosing a subset of top-$k$ localized text chunks completely misses the broader thematic patterns.</li>
+                </ul>
+            </section>
+
+            <section class="card">
+                <h3>2. Theoretical Pillar 1: GraphRAG & Global Sensemaking</h3>
+                <p>To solve the global sensemaking limitation, GRAFT utilizes structural data abstractions via a <strong>Knowledge Graph Index</strong>. Instead of treating a corpus as a disjoint set of text chunks, GraphRAG converts it into a network of explicit semantic concepts.</p>
+                
+                <h4>A. Graph Construction Workflow</h4>
+                <ul>
+                    <li><strong>Entity & Relation Extraction:</strong> Source documents are segmented into overlapping text chunks. A frontier LLM (e.g., GPT-4o) executes abstractive summarization to extract named entities (nodes), their relationships (edges), and corresponding contextual descriptions.</li>
+                    <li><strong>Weighted Graph Assembly:</strong> Extracted components are mapped into an undirected, weighted graph. The structural prominence of relationships is preserved mathematically: duplicate relationship mentions across text chunks are aggregated into edge weights ($W_{e}$) representing the frequency of occurrence.</li>
+                    <li><strong>Claim Aggregation:</strong> Factual claims—verifiable statements mapping dates, events, or specific actions to entities—are extracted concurrently to serve as high-fidelity semantic grounding for downstream retrieval.</li>
+                </ul>
+
+                <h4>B. Topological Modularity: Community Detection via the Leiden Algorithm</h4>
+                <p>A massive knowledge graph can quickly become a complex, unreadable "hairball" if queried globally without structure. To make this scalable, GraphRAG leverages the graph's inherent modularity. GRAFT applies the <strong>Leiden Algorithm</strong> to partition the graph index into hierarchical, nested communities of tightly knit nodes. The algorithm optimizes community partitions to satisfy mutual exclusivity and collective exhaustiveness at each level of clustering.</p>
+
+                <h4>C. Community Summarization & Indexing</h4>
+                <p>For every identified community in the hierarchy, an LLM parses its constituent nodes, edges, and claims to generate a report-like <strong>Community Summary</strong>.</p>
+                <ul>
+                    <li><strong>Leaf-Level Communities:</strong> Element summaries are prioritized by overall node prominence and incrementally packed into the context window.</li>
+                    <li><strong>Higher-Level Communities:</strong> If the sub-network details exceed token capacity, the system ranks sub-communities and recursively swaps out lengthy raw elements for their shorter lower-level summaries.</li>
+                </ul>
+                <p>These summaries act as a pre-computed index that completely maps the corpus's global structure and thematic properties.</p>
+            </section>
+
+            <section class="card">
+                <h3>3. Theoretical Pillar 2: RAFT (Retrieval-Augmented Fine-Tuning)</h3>
+                <p>While GraphRAG restructures data, <strong>RAFT</strong> shifts the focus to model alignment. Downstream retrievers are imperfect and introduce noisy or irrelevant text blocks alongside necessary information. RAFT prepares an LLM specifically for this "open-book exam" setting.</p>
+                
+                <h4>A. Training Architecture: Oracle vs. Distractor Contexts</h4>
+                <p>Instead of standard Supervised Fine-Tuning (SFT) or standard RAG, RAFT alters the fine-tuning data mixture using a hyperparameter $P\%$:</p>
+                <ul>
+                    <li><strong>In $P\%$ of instances:</strong> The model is presented with a Question ($Q$), the Golden (Oracle) documents ($D^*$), and several Distractor documents ($D_{i}$) that are completely irrelevant.</li>
+                    <li><strong>In $(1-P)\%$ of instances:</strong> The model receives the Question ($Q$) and <em>only</em> distractor documents ($D_{i}$), with the golden context entirely omitted.</li>
+                </ul>
+                <pre><code>Training Instance (With Context): Q + D* + D_1 + D_2 + ... + D_k &rarr; A*
+Training Instance (Without Context): Q + D_1 + D_2 + ... + D_k &rarr; A*</code></pre>
+                <p>This enforces dual optimization: the $(1-P)\%$ slice compels the model to memorize core domain knowledge parameters, while the $P\%$ slice acts as an algorithmic filter, training the model to explicitly ignore misleading distractors.</p>
+
+                <h4>B. Algorithmic Filtering: Verification via Citations and Chain-of-Thought</h4>
+                <p>To reinforce this filtering capability, RAFT forces the model to generate a structured <strong>Chain-of-Thought (CoT)</strong> answer. The response must cite verbatim the exact source strings from the reference context within designated identifiers (e.g., <code>##begin_quote##</code> and <code>##end_quote##</code>) and spell out the logical steps leading to the final response, preventing overfitting to ungrounded answers.</p>
+            </section>
+
+            <section class="card">
+                <h3>4. The GRAFT Fusion: How It Operates</h3>
+                <p>GRAFT unifies these two approaches by splitting them across distinct pipeline stages: <strong>Offline Fine-Tuning</strong> and <strong>Online Inference execution</strong>.</p>
+                
+                <div class="code-flow">
+                    <strong>[Offline Phase]</strong><br>
+                    HotPotQA Subset &rarr; Preprocessed with RAFT Receipt (Oracle + Distractors + CoT) &rarr; QLoRA Fine-Tuning (Phi-2)<br><br>
+                    <strong>[Inference Phase]</strong><br>
+                    User Query &rarr; Cosine Similarity Search over Leiden Community Summaries Index &rarr; Top-1 Community Summary Fetched &rarr; Structured Prompt Generation &rarr; Fine-Tuned Model Execution &rarr; Fluent, Globally Aware Response
+                </div>
+
+                <ul>
+                    <li><strong>The Offline Alignment:</strong> Fine-tuning a base model using parameter-efficient methods like QLoRA (4-bit quantization with Rank $r=32$) on a multi-hop reasoning dataset prepared with the RAFT recipe.</li>
+                    <li><strong>The Inference Integration:</strong> At query time, GRAFT computes the cosine similarity between the query embedding and the pre-computed embeddings of the Leiden Community Summaries.</li>
+                    <li><strong>Context Loading & Generation:</strong> The most relevant, high-level community summary (Top $k=1$) is injected into the prompt. The RAFT-aligned model processes this dense snapshot. Because the summary bridges global themes and local relationships, and the fine-tuned model is an expert at filtering relevant details, the system avoids hallucinations.</li>
+                </ul>
+            </section>
+
+            <section class="card">
+                <h3>5. Experimental Validation: Why GRAFT Wins</h3>
+                <p>Empirical evaluations on custom datasets highlight clear performance advantages across key automated generation and semantic metrics.</p>
+                
+                <h4>Global Evaluation Metrics Breakdown</h4>
+                <p>On global questions, GRAFT sets a high baseline across all evaluation metrics compared to its individual parent methodologies:</p>
+                
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Evaluation Metric</th>
+                                <th>Baseline RAG</th>
+                                <th>RAFT Only</th>
+                                <th>Baseline GraphRAG</th>
+                                <th class="highlight-col">GRAFT Framework</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Human Evaluation</td>
+                                <td>0.310</td>
+                                <td>0.500</td>
+                                <td>0.413</td>
+                                <td class="highlight-col"><strong>0.620</strong></td>
+                            </tr>
+                            <tr>
+                                <td>BERT-Score</td>
+                                <td>-0.0196</td>
+                                <td>0.0575</td>
+                                <td>0.346</td>
+                                <td class="highlight-col"><strong>0.330</strong></td>
+                            </tr>
+                            <tr>
+                                <td>BLEU Score</td>
+                                <td>0.0130</td>
+                                <td>0.0344</td>
+                                <td>0.0290</td>
+                                <td class="highlight-col"><strong>0.143</strong></td>
+                            </tr>
+                            <tr>
+                                <td>ROUGE-1 Score</td>
+                                <td>0.168</td>
+                                <td>0.239</td>
+                                <td>0.288</td>
+                                <td class="highlight-col"><strong>0.428</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Semantic Similarity</td>
+                                <td>0.620</td>
+                                <td>0.669</td>
+                                <td>0.753</td>
+                                <td class="highlight-col"><strong>0.863</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; GRAFT Project Framework. All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+</html>

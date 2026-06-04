@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 # ==============================================================================
 # Paths
 # ==============================================================================
-ROOT_DIR = Path(__file__).resolve().parent
+ROOT_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT_DIR / "data"
 FAISS_INDEX_PATH = DATA_DIR / "faiss_index" / "community_index.faiss"
 FAISS_MAPPING_PATH = DATA_DIR / "faiss_index" / "community_mapping.json"
