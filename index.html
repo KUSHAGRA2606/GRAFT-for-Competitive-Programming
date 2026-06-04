@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A detailed blog about GRAFT (Graph Retrieval-Augmented Fine-Tuning) for Competitive Programming and how to host your own project on GitHub Pages.">
+    <title>GRAFT Project Blog & GitHub Pages Tutorial</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="bg-glow"></div>
+    <div class="bg-glow-2"></div>
+
+    <div class="container">
+        <header>
+            <h1>GRAFT: <span class="gradient-text">Graph Retrieval-Augmented Fine-Tuning</span></h1>
+            <p>A deep dive into my journey of building a highly optimized, local-first GraphRAG architecture for complex competitive programming and algorithmic data synthesis.</p>
+        </header>
+
+        <main>
+            <!-- Section 1: Introduction & What I Did -->
+            <section class="glass-card">
+                <h2>What is GRAFT?</h2>
+                <p>Standard Vector RAG (Retrieval-Augmented Generation) is great, but it often fails at global synthesis because it retrieves isolated chunks of information. If you ask a complex algorithmic question, standard RAG might just pull disconnected paragraphs.</p>
+                
+                <p>To solve this, I built <span class="highlight">GRAFT</span>. It replaces naive semantic chunking with a <strong>Hierarchical Community Knowledge Graph</strong>. By combining this graph structure with 4-bit LoRA fine-tuning on a Qwen 3B model, and orchestrating it all through a Map-Reduce agentic pipeline, GRAFT achieves a mathematically proven <span class="highlight">42.7% Head-to-Head Win Rate</span> over standard Vector RAG on complex synthesis tasks.</p>
+                
+                <h3>Key Achievements</h3>
+                <ul>
+                    <li><strong>Hardware Optimized:</strong> Entire pipeline runs locally on a standard 4GB VRAM laptop GPU using 4-bit NormalFloat (NF4) quantization.</li>
+                    <li><strong>Rigorous Benchmarking:</strong> Automated LLM-as-a-Judge evaluation suite using DeepSeek-V4-Flash.</li>
+                    <li><strong>Diversity & Comprehensiveness:</strong> Achieved a 52.1% win rate in diversity and 50.0% in comprehensiveness against baselines.</li>
+                </ul>
+            </section>
+
+            <!-- Section 2: Architecture & Theory -->
+            <section class="glass-card">
+                <h2>The Architecture & Theory</h2>
+                <p>Building GRAFT wasn't just about plugging APIs together. It involved a rigorous, 5-phase theoretical implementation.</p>
+
+                <h3>1. Knowledge Extraction & Community Detection</h3>
+                <p>First, I extracted 4,500+ text nodes from top competitive programming sources. Instead of dumping this into a Vector DB, I used <strong>DeepSeek-V4-Flash</strong> to extract core entities and relationships. Then, using the <span class="highlight">Leiden Algorithm</span> on a NetworkX graph, the system detected dense hierarchical clusters, aggregating isolated nodes into 338 mathematically bounded algorithmic communities.</p>
+
+                <h3>2. RAFT (Retrieval-Augmented Fine-Tuning)</h3>
+                <p>To teach the 3B model how to read and synthesize dense community summaries, I utilized <strong>RAFT</strong>. I generated a highly specific Instruction-Tuning dataset in ChatML format and fine-tuned <code>unsloth/qwen2.5-3b-instruct</code> using <span class="highlight">LoRA (Low-Rank Adaptation)</span> at Rank 16. This allowed the model to deeply understand the graph context without suffering from catastrophic forgetting.</p>
+
+                <h3>3. Agentic Orchestration with LangGraph</h3>
+                <p>At query time, a LangGraph StateMachine routes the user query. It retrieves the top 5 communities from a FAISS index, reranks them using a CrossEncoder (<code>ms-marco-MiniLM-L-6-v2</code>), and finally injects the optimized context into the 4-bit Qwen model to yield the final algorithmic response.</p>
+            </section>
+
+            <!-- Section 3: GitHub Pages Tutorial -->
+            <section class="glass-card" id="tutorial">
+                <h2>Bonus: Hosting This Project on GitHub Pages</h2>
+                <p>If you're wondering how to host a project portfolio or a blog just like this one, it's easier than you think! I noticed URLs like <code>toshit3q34.github.io/Selftape-AI</code> which strongly suggests a GitHub Pages site.</p>
+                <p>The standard pattern for these sites is: <br><code>https://&lt;github-username&gt;.github.io/&lt;repository-name&gt;/</code></p>
+                
+                <h3>How to make one yourself</h3>
+                <ol>
+                    <li>
+                        <strong>Create a GitHub repository</strong>
+                        <p>For example, name it <code>my-portfolio</code>.</p>
+                    </li>
+                    <li>
+                        <strong>Add your website files</strong>
+                        <p>At minimum, create an <code>index.html</code> file:</p>
+                        <pre><code>&lt;!-- index.html --&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;My Website&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Hello World!&lt;/h1&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+                        <p>Push these files to your GitHub repository.</p>
+                    </li>
+                    <li>
+                        <strong>Enable GitHub Pages</strong>
+                        <p>In your repository, go to: <strong>Settings &rarr; Pages</strong>.</p>
+                        <p>Under Build and deployment, set:</p>
+                        <ul>
+                            <li><strong>Source:</strong> Deploy from a branch</li>
+                            <li><strong>Branch:</strong> main</li>
+                            <li><strong>Folder:</strong> /(root)</li>
+                        </ul>
+                        <p>Hit Save.</p>
+                    </li>
+                    <li>
+                        <strong>Wait a minute or two</strong>
+                        <p>GitHub will publish the site automatically. Your website will appear at: <br><code>https://yourusername.github.io/my-portfolio/</code> for a project repository.</p>
+                    </li>
+                </ol>
+
+                <h3>Want a Root URL?</h3>
+                <p>Instead of <code>yourusername.github.io/my-portfolio</code>, if you want your site directly at the root, create a repository named exactly: <code>yourusername.github.io</code>.</p>
+                <p>Then your site becomes <code>https://yourusername.github.io</code> with no repository name in the URL.</p>
+            </section>
+        </main>
+
+        <footer>
+            <p>Made in my GRAFT repo</p>
+        </footer>
+    </div>
+</body>
+</html>
