@@ -2,7 +2,7 @@
 
 GRAFT is a highly optimized, local-first **GraphRAG (Graph Retrieval-Augmented Generation)** architecture designed to synthesize complex competitive programming and algorithmic data. 
 
-By combining hierarchical community knowledge graphs, 4-bit LoRA fine-tuning on a Qwen 3B model, and a Map-Reduce agentic orchestrator, GRAFT mathematically outperforms standard Vector RAG by achieving a **42.7% Head-to-Head Win Rate** on complex synthesis tasks.
+By combining hierarchical community knowledge graphs, 4-bit LoRA fine-tuning on a Qwen 3B model, and a Map-Reduce agentic orchestrator, GRAFT mathematically outperforms standard Vector RAG on complex synthesis tasks.
 
 
 
@@ -48,12 +48,6 @@ At query time, the system uses a **LangGraph** StateMachine:
 ### Phase 5: Automated Benchmarking (`benchmark_judge.py` & `benchmark_extended_metrics.py`)
 A custom benchmarking suite was engineered to prove the pipeline's superiority over standard Vector RAG:
 * **The Methodology:** We generated 50 highly technical algorithmic questions, ran both GRAFT and a Baseline RAG through the inference loop, and fed the blind results to DeepSeek-V4-Flash acting as an impartial judge.
-* **Head-to-Head Win Rate:** **42.7%**
-* **Diversity Win Rate:** **52.1%** *(Proves the hierarchical graph captures broader edge cases)*
-* **Comprehensiveness Win Rate:** **50.0%** *(Proves higher detail retention)*
-* **Answer Relevance (Semantic Drift):** **74.3%** vs Baseline 83.3% *(Proves GRAFT actively synthesizes new explanations rather than just regurgitating exact vocabulary)*
-* **Context Precision:** **21.3%**
-
 ---
 
 ## Quick Start
